@@ -1,3 +1,16 @@
+const button = document.getElementById("dropdownButton");
+const menu = document.getElementById("dropdownMenu");
+
+button.addEventListener("click", (e) => {
+  e.stopPropagation(); // Prevent the click from bubbling up
+  menu.classList.toggle("show");
+});
+
+document.addEventListener("click", (e) => {
+  if (!menu.contains(e.target)) {
+    menu.classList.remove("show");
+  }
+});
 
 
 
@@ -36,6 +49,7 @@ const startYearInput = document.getElementById("year1Input");
 const endYearInput = document.getElementById("year2Input");
 const commentInput = document.getElementById("commentInput"); // Now with id="commentInput"
 const downloadBtn = document.getElementById("downloadBtn");
+const include_logic = document.getElementById("showQueryCheckbox");
 
 // Load indicator map from API
 async function loadIndicators() {
@@ -55,11 +69,11 @@ function updateIndicators(topic) {
   // Some APIs might use 'Economic' instead of 'Economy', adjust if needed here
   // For now assuming 'Economic' and 'Environment' keys from API
   let key = topic;
-  if (topic === "Economy") key = "Economic"; // Map 'Economy' to 'Economic'
+  if (topic === "Economy") key = "Economic"; 
 
   const indicators = Object.keys(indicatorMap[key] || {});
 
-  indicatorOptions.innerHTML = ""; // Clear old options
+  indicatorOptions.innerHTML = ""; 
   indicators.forEach((indicator) => {
     const a = document.createElement("a");
     a.href = "#";
@@ -140,6 +154,27 @@ function scrollToSection(sectionId) {
     section.scrollIntoView({ behavior: "smooth" });
   }
 
+//start
+function selectOptionInput(prefix, year) {
+  document.getElementById(`${prefix}Btn`).textContent = year;
+  document.getElementById(`${prefix}Dropdown`).style.display = 'none';
+
+  // If selecting start year, filter end year dropdown
+  if (prefix === 'year1') {
+    filterEndYears(parseInt(year));
+  }
+}
+
+
+function filterEndYears(minYear) {
+  const dropdown = document.getElementById('year2Dropdown');
+  const links = dropdown.getElementsByTagName('a');
+
+  for (let i = 0; i < links.length; i++) {
+    const year = parseInt(links[i].textContent);
+    links[i].style.display = year >= minYear ? '' : 'none';
+  }
+}
 
 //async function populateFederalStates() {
   //const apiUrl = "https://byteme.kilianpl.app/api/federal-states";
@@ -199,5 +234,4 @@ function filterDropdown(dropdownId, inputId) {
 
 // Call the function to populate the dropdown when the page loads
 document.addEventListener("DOMContentLoaded", populateIndicators());
-
 }
